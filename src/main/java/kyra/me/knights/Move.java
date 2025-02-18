@@ -17,6 +17,7 @@ public class Move {
 
     public void doMove(){
         movingPiece.getStackPane().getChildren().remove(movingPiece);
+        Main.gameManager.playAudio();
 
         startingSquare.setOccupyingPiece(null);
         movingPiece.setOccupiedTile(endingSquare);

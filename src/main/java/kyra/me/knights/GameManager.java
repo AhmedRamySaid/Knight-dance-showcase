@@ -27,7 +27,7 @@ public class GameManager {
 
         try {
             BufferedInputStream moveStream = new BufferedInputStream(
-                    GameManager.class.getResourceAsStream("")
+                    GameManager.class.getResourceAsStream("/kyra/me/knights/move.wav")
             );
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(moveStream);
             Clip moveClip = AudioSystem.getClip();
@@ -43,14 +43,13 @@ public class GameManager {
         } else {
             System.out.println("No solution found");
         }
-        System.out.println(count);
+        System.out.println("Positions evaluated: " + count);
     }
 
-    public static void playAudio(){
+    public void playAudio(){
         moveSound.stop();
         moveSound.setFramePosition(0);
         moveSound.start();
-
     }
 
     public void turnStart(){
@@ -65,7 +64,7 @@ public class GameManager {
 
     //brute force finding the solution (not currently possible due to the high complexity)
     public boolean findSolution(int depth){
-        if (depth > 10) { count++; return false; }
+        if (depth > 1) { count++; return false; }
         List<Move> tempMoves = new ArrayList<>();
         moveCreation(tempMoves);
 
