@@ -5,6 +5,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.NumberBinding;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -48,8 +49,18 @@ public class Main extends Application {
             }
         }
 
-        //Set the layout as the scene root
-        primaryStage.setScene(new Scene(centerPane, 800, 600)); // Adjust the size as needed
+        Button moveButton = new Button("Play found moves");
+        moveButton.prefHeightProperty().bind(binding.divide(4));
+        moveButton.setStyle("-fx-background-color: Green");
+        moveButton.setOnAction(e -> {
+            if (!gameManager.answerMoves.isEmpty()){
+                gameManager.answerMoves.getFirst().doMove();
+                gameManager.answerMoves.removeFirst();
+            }
+        });
+
+        centerPane.getChildren().add(moveButton);
+        primaryStage.setScene(new Scene(centerPane, 600, 400));
 
         //Start the game
         gameManager.gameStart();

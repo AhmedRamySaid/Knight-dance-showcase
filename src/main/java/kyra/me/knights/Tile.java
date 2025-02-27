@@ -24,7 +24,11 @@ public class Tile extends Rectangle {
         this.setColor(Main.tileMainColor, Main.tileOffsetColor);
         this.widthProperty().bind(getStackPane().prefWidthProperty());
         this.heightProperty().bind(getStackPane().prefHeightProperty());
-        Main.gameManager.addTile(this);
+        Main.gameManager.board.addTile(this);
+    }
+    public Tile(int x, int y){
+        this.xPosition = x;
+        this.yPosition = y;
     }
 
     public void setColor(Color mainColor, Color offsetColor) {
@@ -43,6 +47,14 @@ public class Tile extends Rectangle {
             return other.getXPosition() == this.getXPosition() && other.getYPosition() == this.getYPosition();
         }
         return false;
+    }
+    @Override
+    public String toString(){
+        if (occupyingPiece != null){
+            return occupyingPiece.isWhite() ? "w" : "b";
+        } else {
+            return ".";
+        }
     }
 
     public void setOccupyingPiece(Knight piece) { occupyingPiece = piece; }

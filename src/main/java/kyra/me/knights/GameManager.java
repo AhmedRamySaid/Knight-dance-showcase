@@ -3,27 +3,23 @@ package kyra.me.knights;
 import javax.sound.sampled.*;
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class GameManager {
-    public int count;
     public Clip moveSound;
-
-    public Tile[][] tiles = new Tile[3][4];
+    public Board board = new Board();
     public List<Knight> pieces = new ArrayList<>();
-    public List<Move> moves = new ArrayList<>();
     public List<Move> answerMoves = new ArrayList<>();
-    public boolean answerFound = false;
 
     public void gameStart(){
-        new Knight(tiles[0][0], true);
-        new Knight(tiles[1][0], true);
-        new Knight(tiles[2][0], true);
-
-        new Knight(tiles[0][3], false);
-        new Knight(tiles[1][3], false);
-        new Knight(tiles[2][3], false);
+        Tile t;
+        for (int i = 1; i <= 3; i++){
+            t = board.getTile(i,1);
+            new Knight(t, true, t.getStackPane());
+            t = board.getTile(i,4);
+            new Knight(t, false, t.getStackPane());
+        }
+        board.setPieces(pieces);
 
         try {
             BufferedInputStream moveStream = new BufferedInputStream(
@@ -36,14 +32,20 @@ public class GameManager {
         }
         catch (UnsupportedAudioFileException | LineUnavailableException | IOException ex) {System.out.println(ex);}
 
-        turnStart();
-        if (findSolution(1)){
-            System.out.println("Solution found");
-            System.out.println("in " + answerMoves.size() + " moves");
-        } else {
+        //To calculate the time it took for the algorithm to run
+        long l = System.currentTimeMillis();
+        String answer = "www......bbb";
+        List<Move> moves = Algorithm.breadthFirstAlgorithm(board.toString(), answer);
+        if (moves.isEmpty()){
             System.out.println("No solution found");
+        } else {
+            System.out.println("Solution found");
+            System.out.println("in " + moves.size() + " moves");
         }
-        System.out.println("Positions evaluated: " + count);
+        for (Move move: moves){
+            answerMoves.add(new Move(move));
+        }
+        System.out.println("Time taken: " + (System.currentTimeMillis() - l) + "ms");
     }
 
     public void playAudio(){
@@ -52,64 +54,9 @@ public class GameManager {
         moveSound.start();
     }
 
-    public void turnStart(){
-        moveCreation(moves);
-    }
-
-    public void moveCreation(List<Move> moves){
-        for (Knight piece: pieces){
-            piece.createMoves(moves);
+    public static void moveCreation(List<Move> moves, Board board){
+        for (Knight piece: board.getPieces()){
+            piece.createMoves(moves, board);
         }
     }
-
-    //brute force finding the solution (not currently possible due to the high complexity)
-    public boolean findSolution(int depth){
-        if (depth > 1) { count++; return false; }
-        List<Move> tempMoves = new ArrayList<>();
-        moveCreation(tempMoves);
-
-        for (Move move: tempMoves){
-            move.doMoveTemporary();
-
-            if (isStartPos()) {
-                move.undoMove();
-                return false;
-            }
-            if (isSolution()) {
-                move.undoMove();
-                return true;
-            }
-            if (findSolution(depth + 1)) {
-                move.undoMove();
-                return true;
-            }
-
-            move.undoMove();
-        }
-        return false;
-    }
-
-
-    //the algorithm looped back to the start position, cut off the branch
-    private boolean isStartPos(){
-        for (Knight piece: pieces){
-            if (piece.getOccupiedTile().getYPosition() != 1 && piece.isWhite()) return false;
-            if (piece.getOccupiedTile().getYPosition() != 4 && !piece.isWhite()) return false;
-        }
-        return true;
-    }
-    //found the solution
-    private boolean isSolution(){
-        for (Knight piece: pieces){
-            if (piece.getOccupiedTile().getYPosition() != 1 && !piece.isWhite()) return false;
-            if (piece.getOccupiedTile().getYPosition() != 4 && piece.isWhite()) return false;
-        }
-        return true;
-    }
-
-    public Tile getTile(int x, int y){
-        if (x <= 0 || x > 3 || y <= 0 || y > 4) { return null; }
-        return tiles[x-1][y-1]; //starts from 0,0
-    }
-    public void addTile(Tile tile) { tiles[tile.getXPosition()-1][tile.getYPosition()-1] = tile; }
 }

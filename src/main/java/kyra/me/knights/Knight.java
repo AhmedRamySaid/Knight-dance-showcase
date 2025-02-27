@@ -12,7 +12,7 @@ public class Knight extends ImageView {
     static Image[] models = { new Image( Knight.class.getResourceAsStream("/kyra/me/knights/white knight.png")),
             new Image( Knight.class.getResourceAsStream("/kyra/me/knights/black knight.png")) };
 
-    public Knight(Tile tile, boolean isWhite){
+    public Knight(Tile tile, boolean isWhite, StackPane pane) {
         this.occupiedTile = tile;
         this.isWhite = isWhite;
 
@@ -22,39 +22,45 @@ public class Knight extends ImageView {
             this.setImage(models[1]);
         }
 
-        occupiedTile.getStackPane().getChildren().add(this);
+        pane.getChildren().add(this);
         occupiedTile.setOccupyingPiece(this);
         Main.gameManager.pieces.add(this);
 
-        this.fitWidthProperty().bind(getStackPane().prefWidthProperty());
-        this.fitHeightProperty().bind(getStackPane().prefHeightProperty());
+        this.fitWidthProperty().bind(pane.prefWidthProperty());
+        this.fitHeightProperty().bind(pane.prefHeightProperty());
+    }
+    public Knight(Tile tile, boolean isWhite){
+        this.occupiedTile = tile;
+        this.isWhite = isWhite;
+        this.occupiedTile.setOccupyingPiece(this);
     }
 
-    public void createMoves(List<Move> moves){
+    public void createMoves(List<Move> moves, Board board){
         int[] values = {1, 2};
 
-        // Iterate through {1, 2}, {-1, 2}, {1, -2}, {-1, -2}
+        //Iterate through {1, 2}, {-1, 2}, {1, -2}, {-1, -2}
+        Tile t;
         for (int i = 0; i < 4; i++) {
-            Tile t = Main.gameManager.getTile(occupiedTile.getXPosition() + values[0],occupiedTile.getYPosition() + values[1]);
+            t = board.getTile(occupiedTile.getXPosition() + values[0],occupiedTile.getYPosition() + values[1]);
             this.addMove(t, moves);
 
-            t = Main.gameManager.getTile(occupiedTile.getXPosition() + values[1],occupiedTile.getYPosition() + values[0]);
+            t = board.getTile(occupiedTile.getXPosition() + values[1],occupiedTile.getYPosition() + values[0]);
             this.addMove(t, moves);
 
-            // Perform the transformation
+            //Perform the transformation
             if (i % 2 == 0) {
-                values[0] = -values[0];  // Toggle the first value
+                values[0] = -values[0];  //Toggle the first value
             } else {
-                values[1] = -values[1];  // Toggle the second value
+                values[1] = -values[1];  //Toggle the second value
             }
         }
     }
 
     private void addMove(Tile endTile, List<Move> moves){
         if (endTile == null) return;
-        if (endTile.getOccupyingPiece() != null) { return; }
-
+        if (endTile.getOccupyingPiece() != null) return;
         Move move = new Move(occupiedTile, endTile);
+        if (move.isUselessMove()) return;
         moves.add(move);
     }
 
