@@ -16,8 +16,11 @@ public class Move {
         }
     }
     public Move(Tile start, Tile end){
-        if (start.getOccupyingPiece() == null || end.getOccupyingPiece() != null){
+        if (start.getOccupyingPiece() == null){
             throw new IllegalStateException("There is no moving piece");
+        }
+        if (end.getOccupyingPiece() != null){
+            throw new IllegalStateException("Tile already occupied");
         }
         if (start.getXPosition() == 2 && start.getYPosition() == 3 && end.getXPosition() == 3 && end.getYPosition() == 2){
             System.out.print("");

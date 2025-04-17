@@ -45,7 +45,7 @@ public class Main extends Application {
                 stackPane.prefWidthProperty().bind(binding.divide(8));
                 stackPane.prefHeightProperty().bind(binding.divide(8));
 
-                gridPane.add(stackPane, i, 4-j); // GridPane starts from {0,0} and the top left
+                gridPane.add(stackPane, i, 4-j); //GridPane starts from {0,0} and the top left
             }
         }
 
@@ -54,7 +54,10 @@ public class Main extends Application {
         moveButton.setStyle("-fx-background-color: Green");
         moveButton.setOnAction(e -> {
             if (!gameManager.answerMoves.isEmpty()){
-                gameManager.answerMoves.getFirst().doMove();
+                String move = gameManager.answerMoves.getFirst();
+                Tile start = gameManager.board.getTile(move.charAt(0)-'0', move.charAt(1)-'0');
+                Tile end = gameManager.board.getTile(move.charAt(2)-'0', move.charAt(3)-'0');
+                new Move(start, end).doMove();
                 gameManager.answerMoves.removeFirst();
             }
         });
