@@ -9,6 +9,10 @@ import java.util.List;
 public class Knight extends ImageView {
     private Tile occupiedTile;
     private boolean isWhite;
+    private static final int[][] KNIGHT_MOVES = {
+            {-2, -1}, {-2, 1}, {2, -1}, {2, 1},
+            {-1, -2}, {-1, 2}, {1, -2}, {1, 2}
+    };
     static Image[] models = { new Image( Knight.class.getResourceAsStream("/kyra/me/knights/white knight.png")),
             new Image( Knight.class.getResourceAsStream("/kyra/me/knights/black knight.png")) };
 
@@ -36,23 +40,11 @@ public class Knight extends ImageView {
     }
 
     public void createMoves(List<Move> moves, Board board){
-        int[] values = {1, 2};
-
-        //Iterate through {1, 2}, {-1, 2}, {1, -2}, {-1, -2}
+        //Iterates through all possible combination of moves for a knight
         Tile t;
-        for (int i = 0; i < 4; i++) {
-            t = board.getTile(occupiedTile.getXPosition() + values[0],occupiedTile.getYPosition() + values[1]);
+        for (int[] move : KNIGHT_MOVES) {
+            t = board.getTile(occupiedTile.getXPosition() + move[0],occupiedTile.getYPosition() + move[1]);
             this.addMove(t, moves);
-
-            t = board.getTile(occupiedTile.getXPosition() + values[1],occupiedTile.getYPosition() + values[0]);
-            this.addMove(t, moves);
-
-            //Perform the transformation
-            if (i % 2 == 0) {
-                values[0] = -values[0];  //Toggle the first value
-            } else {
-                values[1] = -values[1];  //Toggle the second value
-            }
         }
     }
 
